@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Native builds
+android/
+ios/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# EAS
+.easignore
+
+# Logs
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# Editor
+.vscode/
+.idea/
+
+# TypeScript
+*.tsbuildinfo
+
+# Package manager
+.npmrc
+yarn.lock
+package-lock.json
