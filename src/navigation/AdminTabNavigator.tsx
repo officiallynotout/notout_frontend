@@ -51,6 +51,7 @@ export const AdminTabNavigator = () => {
                 color={focused ? colors.olive.primary : colors.text.tertiary}
                 weight={focused ? 'semiBold' : 'regular'}
                 style={styles.label}
+                numberOfLines={1}
               >
                 {config.label}
               </AppText>
@@ -78,7 +79,8 @@ const styles = StyleSheet.create({
   iconWrapper: {
     alignItems: 'center',
     gap:         3,
-    paddingTop:  6,
+    paddingTop:  12,
+    minWidth:    56,
   },
   label: { letterSpacing: 0 },
 });
