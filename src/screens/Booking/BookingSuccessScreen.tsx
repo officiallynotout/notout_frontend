@@ -144,15 +144,16 @@ export const BookingSuccessScreen: React.FC = () => {
         >
           <Button
             label="View My Bookings"
-            onPress={() => {
-              navigation.reset({ index: 0, routes: [{ name: 'App' }] });
-              // Tab navigator handles deep linking — navigate to MyBookings tab
-            }}
+            onPress={() =>
+              navigation.reset({ index: 0, routes: [{ name: 'Tabs', params: { screen: 'MyBookings' } }] })
+            }
           />
           <Button
             label="Back to Home"
             variant="outline"
-            onPress={() => navigation.reset({ index: 0, routes: [{ name: 'App' }] })}
+            onPress={() =>
+              navigation.reset({ index: 0, routes: [{ name: 'Tabs', params: { screen: 'Home' } }] })
+            }
             style={styles.secondaryBtn}
           />
         </MotiView>

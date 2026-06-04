@@ -27,6 +27,7 @@ const OTP_LENGTH    = 4;
 const RESEND_SECS   = 30;
 
 export const OTPVerifyScreen: React.FC = () => {
+  const navigation = useNavigation();
   const route  = useRoute<Route>();
   const insets = useSafeAreaInsets();
   const { login }      = useAuth();

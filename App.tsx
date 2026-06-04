@@ -21,6 +21,7 @@ import { injectStore } from '@/api/client';
 import { RootNavigator } from '@/navigation/RootNavigator';
 import { colors } from '@/constants';
 import { useNotifications } from '@/hooks';
+import { useAppSelector } from '@/store';
 
 injectStore(store);
 
@@ -59,6 +60,16 @@ const FontLoader: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <>{children}</>;
 };
 
+const AppContent: React.FC = () => {
+  const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated);
+  return (
+    <NavigationContainer key={isAuthenticated ? 'app' : 'auth'}>
+      <StatusBar style="light" />
+      <RootNavigator />
+    </NavigationContainer>
+  );
+};
+
 export default function App() {
   return (
     <ReduxProvider store={store}>
@@ -67,10 +78,7 @@ export default function App() {
           <SafeAreaProvider>
             <NotificationSetup />
             <FontLoader>
-              <NavigationContainer>
-                <StatusBar style="light" />
-                <RootNavigator />
-              </NavigationContainer>
+              <AppContent />
             </FontLoader>
           </SafeAreaProvider>
         </QueryClientProvider>
