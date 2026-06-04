@@ -26,10 +26,23 @@
         "backgroundColor": "#0D0D0D"
       },
       "package": "com.notout.app",
-      "permissions": []
+      "googleServicesFile": "./google-services.json",
+      "permissions": [
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.VIBRATE",
+        "android.permission.POST_NOTIFICATIONS"
+      ]
     },
     "plugins": [
       "expo-font",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#7C8A4E",
+          "sounds": []
+        }
+      ],
       [
         "expo-splash-screen",
         {

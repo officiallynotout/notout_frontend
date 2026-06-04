@@ -20,6 +20,7 @@ import { store, persistor } from '@/store';
 import { injectStore } from '@/api/client';
 import { RootNavigator } from '@/navigation/RootNavigator';
 import { colors } from '@/constants';
+import { useNotifications } from '@/hooks';
 
 injectStore(store);
 
@@ -33,6 +34,11 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+const NotificationSetup: React.FC = () => {
+  useNotifications();
+  return null;
+};
 
 const FontLoader: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [fontsLoaded] = useFonts({
@@ -59,6 +65,7 @@ export default function App() {
       <PersistGate loading={null} persistor={persistor}>
         <QueryClientProvider client={queryClient}>
           <SafeAreaProvider>
+            <NotificationSetup />
             <FontLoader>
               <NavigationContainer>
                 <StatusBar style="light" />

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1092866809609",
+    "project_id": "notout-c05b3",
+    "storage_bucket": "notout-c05b3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1092866809609:android:21eb5b5db8260227f17dd8",
+        "android_client_info": {
+          "package_name": "com.notout.frontendone"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRNX4T7liPLuzrZ4ZGTFBDvPlR1faLryg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

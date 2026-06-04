@@ -5,3 +5,4 @@ export * from './slot.api';
 export * from './booking.api';
 export * from './user.api';
 export * from './admin.api';
+export * from './notification.api';
