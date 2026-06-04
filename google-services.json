@@ -7,6 +7,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:1092866809609:android:c8de3bd3b109d67cf17dd8",
+        "android_client_info": {
+          "package_name": "com.notout.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRNX4T7liPLuzrZ4ZGTFBDvPlR1faLryg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:1092866809609:android:21eb5b5db8260227f17dd8",
         "android_client_info": {
           "package_name": "com.notout.frontendone"
