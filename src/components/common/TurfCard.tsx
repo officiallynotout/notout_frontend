@@ -5,6 +5,7 @@ import { MotiView } from 'moti';
 import { Ionicons } from '@expo/vector-icons';
 import { AppText, Badge } from '@/components/ui';
 import { colors, radius, spacing } from '@/constants';
+import { resolveImageUrl } from '@/utils';
 import type { Turf } from '@/types';
 
 interface TurfCardProps {
@@ -35,7 +36,7 @@ export const TurfCard: React.FC<TurfCardProps> = ({ turf, onPress, index = 0 }) 
           style={styles.card}
         >
           <Image
-            source={{ uri: PLACEHOLDER }}
+            source={{ uri: resolveImageUrl(turf.images?.[0]) || PLACEHOLDER }}
             style={styles.image}
             contentFit="cover"
             transition={300}

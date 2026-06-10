@@ -21,7 +21,6 @@ import { injectStore } from '@/api/client';
 import { RootNavigator } from '@/navigation/RootNavigator';
 import { colors } from '@/constants';
 import { useNotifications } from '@/hooks';
-import { useAppSelector } from '@/store';
 
 injectStore(store);
 
@@ -61,9 +60,8 @@ const FontLoader: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 };
 
 const AppContent: React.FC = () => {
-  const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated);
   return (
-    <NavigationContainer key={isAuthenticated ? 'app' : 'auth'}>
+    <NavigationContainer>
       <StatusBar style="light" />
       <RootNavigator />
     </NavigationContainer>

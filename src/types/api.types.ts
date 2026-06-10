@@ -39,6 +39,7 @@ export interface AuthTokens {
 
 export interface OtpResponse {
   message: string;
+  otp?: string;
 }
 
 // ─── User ─────────────────────────────────────────────────────────────────────
@@ -78,6 +79,7 @@ export interface Turf {
   description: string;
   location: TurfLocation;
   amenities: string[];
+  images: string[];
   pricePerHour: number;
   operatingHours: OperatingHours;
   isActive: boolean;
@@ -126,19 +128,28 @@ export type SlotStatus = 'available' | 'locked' | 'booked';
 export interface Slot {
   _id: string;
   turfId: string;
+  boxId: string;
   date: string;
   startTime: string;
   endTime: string;
   price: number;
   status: SlotStatus;
+  effectiveStatus: SlotStatus;
   lockedBy: string | null;
   lockedUntil: string | null;
   bookedBy: string | null;
 }
 
+export interface Box {
+  _id:      string;
+  turfId:   string;
+  name:     string;
+  isActive: boolean;
+}
+
 export interface SlotsQuery {
-  turfId: string;
-  date: string;
+  boxId: string;
+  date:  string;
 }
 
 export interface LockSlotPayload {
@@ -171,6 +182,141 @@ export interface CreateBookingPayload {
   date:      string;
   startTime: string;
   endTime:   string;
+}
+
+// ─── Cricket Scoreboard ───────────────────────────────────────────────────────
+
+export type CricketMatchStatus    = 'SETUP' | 'IN_PROGRESS' | 'INNINGS_BREAK' | 'COMPLETED';
+export type CricketInningsStatus  = 'IN_PROGRESS' | 'COMPLETED';
+export type DismissalType =
+  | 'BOWLED' | 'CAUGHT' | 'RUN_OUT' | 'LBW'
+  | 'STUMPED' | 'HIT_WICKET' | 'RETIRED_HURT';
+
+export interface CricketBatsmanScore {
+  id:           string;
+  playerName:   string;
+  runs:         number;
+  balls:        number;
+  fours:        number;
+  sixes:        number;
+  strikeRate:   number;
+  isOut:        boolean;
+  dismissalType: DismissalType | null;
+  battingOrder: number;
+}
+
+export interface CricketBowlerScore {
+  id:         string;
+  playerName: string;
+  overs:      string;
+  runs:       number;
+  wickets:    number;
+  maidens:    number;
+  wides:      number;
+  noBalls:    number;
+  economy:    number;
+}
+
+export interface CricketBallRecord {
+  id:                  string;
+  overNumber:          number;
+  ballNumber:          number;
+  batsmanName:         string;
+  bowlerName:          string;
+  runs:                number;
+  isWide:              boolean;
+  isNoBall:            boolean;
+  isBye:               boolean;
+  isLegBye:            boolean;
+  isWicket:            boolean;
+  dismissalType:       DismissalType | null;
+  dismissedBatsmanName: string | null;
+  totalRuns:           number;
+}
+
+export interface CricketExtras {
+  wides:   number;
+  noBalls: number;
+  byes:    number;
+  legByes: number;
+  total:   number;
+}
+
+export interface CricketInnings {
+  id:                     string;
+  inningsNumber:          1 | 2;
+  battingTeam:            'team1' | 'team2';
+  totalRuns:              number;
+  totalWickets:           number;
+  overs:                  string;
+  runRate:                number;
+  extras:                 CricketExtras;
+  status:                 CricketInningsStatus;
+  currentOverNumber:      number;
+  currentLegalBallsInOver: number;
+  currentBowlerName:      string | null;
+  currentStrikeBatsman:   string | null;
+  currentNonStrikeBatsman: string | null;
+  batsmen:                CricketBatsmanScore[];
+  bowlers:                CricketBowlerScore[];
+  recentBalls:            CricketBallRecord[];
+}
+
+export interface CricketMatch {
+  matchId:       string;
+  shareCode:     string;
+  team1Name:     string;
+  team2Name:     string;
+  battingFirst:  'team1' | 'team2';
+  totalOvers:    number;
+  playersPerSide: number;
+  trackExtras:   boolean;
+  status:        CricketMatchStatus;
+  result:        string | null;
+  createdAt:     string;
+  innings:       CricketInnings[];
+  target?:       number;
+}
+
+export interface CricketMatchListItem {
+  matchId:    string;
+  shareCode:  string;
+  team1Name:  string;
+  team2Name:  string;
+  status:     CricketMatchStatus;
+  result:     string | null;
+  totalOvers: number;
+  createdAt:  string;
+  innings: {
+    inningsNumber: 1 | 2;
+    battingTeam:   'team1' | 'team2';
+    totalRuns:     number;
+    totalWickets:  number;
+    overs:         string;
+    status:        CricketInningsStatus;
+  }[];
+}
+
+export interface CreateMatchPayload {
+  team1Name:     string;
+  team2Name:     string;
+  battingFirst:  'team1' | 'team2';
+  totalOvers:    number;
+  playersPerSide: number;
+  trackExtras:   boolean;
+}
+
+export interface LogBallPayload {
+  batsmanName:          string;
+  bowlerName:           string;
+  runs?:                number;
+  isWide?:              boolean;
+  isNoBall?:            boolean;
+  isBye?:               boolean;
+  isLegBye?:            boolean;
+  isWicket?:            boolean;
+  dismissalType?:       DismissalType;
+  dismissedBatsmanName?: string;
 }
 
 // ─── Admin ────────────────────────────────────────────────────────────────────

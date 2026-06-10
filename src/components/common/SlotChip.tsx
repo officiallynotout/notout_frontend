@@ -4,6 +4,7 @@ import { MotiView } from 'moti';
 import { AppText } from '@/components/ui';
 import { colors, radius, spacing } from '@/constants';
 import { useHaptics } from '@/hooks';
+import { formatTime } from '@/utils/formatters';
 import type { Slot } from '@/types';
 
 interface SlotChipProps {
@@ -14,8 +15,9 @@ interface SlotChipProps {
 
 export const SlotChip: React.FC<SlotChipProps> = ({ slot, selected, onPress }) => {
   const { selection } = useHaptics();
-  const isAvailable   = slot.status === 'available';
-  const isBooked      = slot.status === 'booked';
+  const status      = slot.effectiveStatus ?? slot.status;
+  const isAvailable = status === 'available';
+  const isBooked    = status === 'booked';
 
   const bgColor = selected
     ? colors.olive.primary
@@ -51,10 +53,10 @@ export const SlotChip: React.FC<SlotChipProps> = ({ slot, selected, onPress }) =
         style={styles.chip}
       >
         <AppText size="sm" weight={selected ? 'semiBold' : 'regular'} color={textColor} align="center">
-          {slot.startTime}
+          {formatTime(slot.startTime)}
         </AppText>
         <AppText size="xs" color={selected ? colors.text.inverse : colors.text.tertiary} align="center">
-          {slot.endTime}
+          {formatTime(slot.endTime)}
         </AppText>
         <AppText size="xs" weight="medium" color={textColor} align="center">
           ₹{slot.price}

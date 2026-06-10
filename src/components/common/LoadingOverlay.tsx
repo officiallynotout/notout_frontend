@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     zIndex:          999,
   },
   box: {
-    backgroundColor: '#1A1A1A',
+    backgroundColor: colors.bg.secondary,
     borderRadius:    16,
     padding:         32,
     alignItems:      'center',

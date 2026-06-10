@@ -27,7 +27,7 @@ export const BookingConfirmScreen: React.FC = () => {
   const insets     = useSafeAreaInsets();
   const { success: hapticSuccess } = useHaptics();
 
-  const { turfName, date, startTime, endTime, price, slotId } = route.params;
+  const { turfName, boxName, date, startTime, endTime, price, slotId } = route.params;
 
   const [confirming, setConfirming] = useState(false);
   const [remaining, setRemaining]   = useState(LOCK_SECS);
@@ -134,6 +134,7 @@ export const BookingConfirmScreen: React.FC = () => {
             </AppText>
 
             {[
+              { icon: 'cube-outline'     as const, label: 'Box',       value: boxName },
               { icon: 'calendar-outline' as const, label: 'Date',      value: formatDate(date) },
               { icon: 'time-outline'     as const, label: 'Time',      value: `${formatTime(startTime)} – ${formatTime(endTime)}` },
               { icon: 'cash-outline'     as const, label: 'Amount Due', value: formatCurrency(price) },

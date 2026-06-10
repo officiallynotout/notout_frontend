@@ -3,7 +3,6 @@ import {
   View,
   ScrollView,
   StyleSheet,
-  Dimensions,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type {
@@ -11,12 +10,11 @@ import type {
   NativeStackScreenProps,
 } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Image } from 'expo-image';
 import { MotiView } from 'moti';
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
 import { AppText, Button, Badge, Card } from '@/components/ui';
-import { Header } from '@/components/common';
+import { Header, ImageSlider } from '@/components/common';
 import { colors, spacing, radius } from '@/constants';
 import { getTurfByIdApi } from '@/api';
 import type { AppStackParamList } from '@/navigation/types';
@@ -24,8 +22,6 @@ import type { AppStackParamList } from '@/navigation/types';
 type Route = NativeStackScreenProps<AppStackParamList, 'TurfDetail'>['route'];
 type Nav   = NativeStackNavigationProp<AppStackParamList>;
 
-const { width } = Dimensions.get('window');
-const PLACEHOLDER = 'https://images.unsplash.com/photo-1529900748604-07564a03e7a6?w=800&q=80';
 
 export const TurfDetailScreen: React.FC = () => {
   const route      = useRoute<Route>();
@@ -48,18 +44,13 @@ export const TurfDetailScreen: React.FC = () => {
       />
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}>
-        {/* Hero image */}
+        {/* Hero image slider */}
         <MotiView
           from={{ opacity: 0, scale: 1.04 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ type: 'timing', duration: 500 }}
         >
-          <Image
-            source={{ uri: PLACEHOLDER }}
-            style={styles.heroImage}
-            contentFit="cover"
-            transition={400}
-          />
+          <ImageSlider images={turf?.images ?? []} />
         </MotiView>
 
         {!isLoading && turf ? (
@@ -157,10 +148,6 @@ const styles = StyleSheet.create({
   container: {
     flex:            1,
     backgroundColor: colors.bg.primary,
-  },
-  heroImage: {
-    width,
-    height: 220,
   },
   body: {
     padding: spacing[5],

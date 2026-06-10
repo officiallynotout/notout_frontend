@@ -31,7 +31,7 @@ export const OTPVerifyScreen: React.FC = () => {
   const route  = useRoute<Route>();
   const insets = useSafeAreaInsets();
   const { login }      = useAuth();
-  const { phone, name, isNewUser } = route.params;
+  const { phone } = route.params;
 
   const [otp, setOtp]           = useState('');
   const [loading, setLoading]   = useState(false);

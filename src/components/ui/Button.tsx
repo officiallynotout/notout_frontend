@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, StyleSheet, ViewStyle, ActivityIndicator } from 'react-native';
+import { Pressable, StyleSheet, ViewStyle, TextStyle, ActivityIndicator } from 'react-native';
 import { MotiView } from 'moti';
 import { AppText } from './AppText';
 import { colors, radius, spacing, fontFamily, fontSize } from '@/constants';
@@ -17,20 +17,21 @@ interface ButtonProps {
   disabled?:  boolean;
   fullWidth?: boolean;
   style?:     ViewStyle;
+  labelStyle?: TextStyle;
   leftIcon?:  React.ReactNode;
 }
 
 const variantStyles: Record<Variant, { bg: string; border?: string; text: string }> = {
-  primary: { bg: colors.olive.primary, text: colors.text.inverse },
+  primary: { bg: colors.olive.primary, text: colors.white },
   outline: { bg: colors.transparent, border: colors.olive.primary, text: colors.olive.primary },
   ghost:   { bg: colors.transparent, text: colors.olive.primary },
   danger:  { bg: colors.status.error, text: colors.white },
 };
 
 const sizeStyles: Record<Size, { height: number; px: number; textSize: keyof typeof fontSize }> = {
-  sm: { height: 40, px: spacing[4], textSize: 'sm' },
-  md: { height: 52, px: spacing[6], textSize: 'base' },
-  lg: { height: 60, px: spacing[8], textSize: 'md' },
+  sm: { height: 42, px: spacing[4], textSize: 'base' },
+  md: { height: 54, px: spacing[6], textSize: 'md' },
+  lg: { height: 62, px: spacing[8], textSize: 'lg' },
 };
 
 export const Button: React.FC<ButtonProps> = ({
@@ -42,6 +43,7 @@ export const Button: React.FC<ButtonProps> = ({
   disabled  = false,
   fullWidth = true,
   style,
+  labelStyle,
   leftIcon,
 }) => {
   const { light } = useHaptics();
@@ -84,7 +86,7 @@ export const Button: React.FC<ButtonProps> = ({
         {loading ? (
           <ActivityIndicator
             size="small"
-            color={variant === 'primary' ? colors.text.inverse : colors.olive.primary}
+            color={variant === 'primary' ? colors.white : colors.olive.primary}
           />
         ) : (
           <>
@@ -93,7 +95,7 @@ export const Button: React.FC<ButtonProps> = ({
               size={ss.textSize}
               weight="semiBold"
               color={vs.text}
-              style={leftIcon ? styles.labelWithIcon : undefined}
+              style={[leftIcon ? styles.labelWithIcon : undefined, labelStyle]}
             >
               {label}
             </AppText>

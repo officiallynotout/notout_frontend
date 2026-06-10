@@ -26,7 +26,7 @@ export const SlotLockScreen: React.FC = () => {
   const insets     = useSafeAreaInsets();
   const [loading, setLoading] = useState(false);
 
-  const { turfId, turfName, slotId, date, startTime, endTime, price } = route.params;
+  const { turfId, turfName, boxName, slotId, date, startTime, endTime, price } = route.params;
 
   const handleLockSlot = async () => {
     setLoading(true);
@@ -34,6 +34,7 @@ export const SlotLockScreen: React.FC = () => {
       await lockSlotApi({ slotId });
       navigation.navigate('BookingConfirm', {
         turfName,
+        boxName,
         date,
         startTime,
         endTime,
@@ -89,6 +90,8 @@ export const SlotLockScreen: React.FC = () => {
             </AppText>
 
             <View style={styles.infoList}>
+              <InfoRow icon="cube-outline"     label="Box"         value={boxName} />
+              <View style={styles.separator} />
               <InfoRow icon="calendar-outline" label="Date"        value={formatDate(date)} />
               <View style={styles.separator} />
               <InfoRow icon="time-outline"     label="Time Slot"   value={`${formatTime(startTime)} – ${formatTime(endTime)}`} />

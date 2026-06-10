@@ -7,6 +7,7 @@ import { AppText } from '@/components/ui';
 import { HomeScreen } from '@/screens/Home/HomeScreen';
 import { MyBookingsScreen } from '@/screens/MyBookings/MyBookingsScreen';
 import { ProfileScreen } from '@/screens/Profile/ProfileScreen';
+import { MatchHistoryScreen } from '@/screens/Cricket/MatchHistoryScreen';
 import { colors, radius, spacing } from '@/constants';
 import type { TabParamList } from './types';
 
@@ -18,9 +19,10 @@ const TAB_CONFIG: Record<
   keyof TabParamList,
   { icon: TabIconName; activeIcon: TabIconName; label: string }
 > = {
-  Home:       { icon: 'grid-outline',     activeIcon: 'grid',        label: 'Explore'   },
-  MyBookings: { icon: 'calendar-outline', activeIcon: 'calendar',    label: 'Bookings'  },
-  Profile:    { icon: 'person-outline',   activeIcon: 'person',      label: 'Profile'   },
+  Home:       { icon: 'grid-outline',     activeIcon: 'grid',        label: 'Explore'  },
+  MyBookings: { icon: 'calendar-outline', activeIcon: 'calendar',    label: 'Bookings' },
+  Cricket:    { icon: 'baseball-outline', activeIcon: 'baseball',    label: 'Cricket'  },
+  Profile:    { icon: 'person-outline',   activeIcon: 'person',      label: 'Profile'  },
 };
 
 export const TabNavigator = () => {
@@ -58,9 +60,10 @@ export const TabNavigator = () => {
         };
       }}
     >
-      <Tab.Screen name="Home"       component={HomeScreen}       />
-      <Tab.Screen name="MyBookings" component={MyBookingsScreen} />
-      <Tab.Screen name="Profile"    component={ProfileScreen}    />
+      <Tab.Screen name="Home"       component={HomeScreen}        />
+      <Tab.Screen name="MyBookings" component={MyBookingsScreen}  />
+      <Tab.Screen name="Cricket"    component={MatchHistoryScreen} />
+      <Tab.Screen name="Profile"    component={ProfileScreen}     />
     </Tab.Navigator>
   );
 };

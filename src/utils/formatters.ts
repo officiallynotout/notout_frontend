@@ -1,5 +1,14 @@
 import { format, parseISO } from 'date-fns';
 
+const API_ORIGIN = (process.env.EXPO_PUBLIC_API_BASE_URL ?? '')
+  .replace(/\/mobile\/v\d+\/?$/, '');
+
+export const resolveImageUrl = (path: string): string => {
+  if (!path) return '';
+  if (path.startsWith('http://') || path.startsWith('https://')) return path;
+  return `${API_ORIGIN}${path}`;
+};
+
 export const formatDate = (dateStr: string): string => {
   try {
     return format(parseISO(dateStr), 'EEE, dd MMM yyyy');

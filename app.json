@@ -55,16 +55,17 @@
         }
       ]
     ],
-    "extra": {
-      "eas": {
-        "projectId": "24572013-bf7c-427e-915c-21288523b043"
-      }
-    },
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/24572013-bf7c-427e-915c-21288523b043"
-    }
+      "url": "https://u.expo.dev/f6455de6-c651-464b-ada5-bc00964c5bac"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "f6455de6-c651-464b-ada5-bc00964c5bac"
+      }
+    },
+    "owner": "divyadarshandas"
   }
 }

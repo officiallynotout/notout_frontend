@@ -15,8 +15,6 @@ export type AuthStackParamList = {
   PhoneEntry: undefined;
   OTPVerify: {
     phone: string;
-    name?: string;
-    isNewUser: boolean;
   };
 };
 
@@ -26,9 +24,16 @@ export type AppStackParamList = {
   Tabs: NavigatorScreenParams<TabParamList> | undefined;
   TurfDetail: { turfId: string };
   DateSlot: { turfId: string; turfName: string };
+  CricketNewMatch:    undefined;
+  CricketStartInnings: { matchId: string; isSecondInnings?: boolean; target?: number };
+  CricketLiveScoring: { matchId: string };
+  CricketInningsBreak: { matchId: string };
+  CricketMatchResult: { matchId: string };
+  CricketSpectator:   { shareCode?: string };
   SlotLock: {
     turfId:    string;
     turfName:  string;
+    boxName:   string;
     slotId:    string;
     date:      string;
     startTime: string;
@@ -37,6 +42,7 @@ export type AppStackParamList = {
   };
   BookingConfirm: {
     turfName:  string;
+    boxName:   string;
     date:      string;
     startTime: string;
     endTime:   string;
@@ -57,6 +63,7 @@ export type AppStackParamList = {
 export type TabParamList = {
   Home:       undefined;
   MyBookings: undefined;
+  Cricket:    undefined;
   Profile:    undefined;
 };
 

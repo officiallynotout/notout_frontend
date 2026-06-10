@@ -1,8 +1,21 @@
-import React, { useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { MotiView, MotiText } from 'moti';
+import React, { useEffect, useRef } from 'react';
+import { View, StyleSheet, Image } from 'react-native';
+import { MotiView } from 'moti';
 import * as ExpoSplashScreen from 'expo-splash-screen';
-import { colors, fontFamily } from '@/constants';
+import { AxiosError } from 'axios';
+import { colors } from '@/constants';
+import { useAppSelector, useAppDispatch } from '@/store';
+import { setCredentials, clearAuth } from '@/store/slices/authSlice';
+import { refreshTokenApi } from '@/api/auth.api';
+
+const isTokenExpired = (token: string): boolean => {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.exp * 1000 < Date.now();
+  } catch {
+    return true;
+  }
+};
 
 ExpoSplashScreen.preventAutoHideAsync();
 
@@ -11,11 +24,44 @@ interface Props {
 }
 
 export const SplashScreen: React.FC<Props> = ({ onDone }) => {
+  const dispatch = useAppDispatch();
+  const accessToken     = useAppSelector((s) => s.auth.accessToken);
+  const refreshToken    = useAppSelector((s) => s.auth.refreshToken);
+  const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated);
+
+  // Keep a ref so the effect closure always calls the latest onDone
+  // without needing it as a dependency (which would restart the timer on every re-render)
+  const onDoneRef = useRef(onDone);
+  onDoneRef.current = onDone;
+
   useEffect(() => {
     ExpoSplashScreen.hideAsync();
-    const timer = setTimeout(onDone, 2400);
-    return () => clearTimeout(timer);
-  }, [onDone]);
+
+    // Snapshot auth state at mount — we only validate once on cold start
+    const _accessToken     = accessToken;
+    const _refreshToken    = refreshToken;
+    const _isAuthenticated = isAuthenticated;
+
+    const minSplashDelay = new Promise<void>((resolve) => setTimeout(resolve, 2400));
+
+    const validateSession = async () => {
+      if (!_isAuthenticated || !_refreshToken) return;
+
+      // Skip refresh if access token is still valid
+      if (_accessToken && !isTokenExpired(_accessToken)) return;
+
+      try {
+        const result = await refreshTokenApi(_refreshToken);
+        dispatch(setCredentials({ accessToken: result.data.data.accessToken }));
+      } catch (err) {
+        // Only log out on explicit auth rejection — not network/server errors
+        const status = (err as AxiosError)?.response?.status;
+        if (status === 401) dispatch(clearAuth());
+      }
+    };
+
+    Promise.all([minSplashDelay, validateSession()]).then(() => onDoneRef.current());
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <View style={styles.container}>
@@ -25,40 +71,11 @@ export const SplashScreen: React.FC<Props> = ({ onDone }) => {
         transition={{ type: 'spring', damping: 18, stiffness: 160, delay: 200 }}
         style={styles.logoMark}
       >
-        <View style={styles.logoInner} />
-      </MotiView>
-
-      <MotiView
-        from={{ opacity: 0, translateY: 12 }}
-        animate={{ opacity: 1, translateY: 0 }}
-        transition={{ type: 'timing', duration: 500, delay: 600 }}
-      >
-        <MotiText style={styles.brandName}>NOTOUT</MotiText>
-      </MotiView>
-
-      <MotiView
-        from={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ type: 'timing', duration: 500, delay: 900 }}
-      >
-        <MotiText style={styles.tagline}>Book. Play. Win.</MotiText>
-      </MotiView>
-
-      <MotiView
-        from={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ type: 'timing', duration: 400, delay: 1400 }}
-        style={styles.dotsRow}
-      >
-        {[0, 1, 2].map((i) => (
-          <MotiView
-            key={i}
-            from={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: 'spring', delay: 1400 + i * 120 }}
-            style={[styles.dot, i === 1 && styles.dotActive]}
-          />
-        ))}
+        <Image
+          source={require('../../../assets/notout_logo.png')}
+          style={styles.logoImage}
+          resizeMode="contain"
+        />
       </MotiView>
     </View>
   );
@@ -72,51 +89,11 @@ const styles = StyleSheet.create({
     justifyContent:  'center',
   },
   logoMark: {
-    width:           72,
-    height:          72,
-    borderRadius:    20,
-    backgroundColor: colors.olive.primary,
     alignItems:      'center',
     justifyContent:  'center',
-    marginBottom:    28,
   },
-  logoInner: {
-    width:        36,
-    height:       36,
-    borderRadius: 8,
-    borderWidth:  3,
-    borderColor:  colors.text.inverse,
-  },
-  brandName: {
-    fontFamily:    fontFamily.bold,
-    fontSize:      36,
-    color:         colors.text.primary,
-    letterSpacing: 8,
-    textAlign:     'center',
-  },
-  tagline: {
-    fontFamily:    fontFamily.medium,
-    fontSize:      14,
-    color:         colors.text.secondary,
-    letterSpacing: 3,
-    marginTop:     8,
-    textAlign:     'center',
-  },
-  dotsRow: {
-    flexDirection: 'row',
-    gap:           8,
-    position:      'absolute',
-    bottom:        60,
-  },
-  dot: {
-    width:           6,
-    height:          6,
-    borderRadius:    3,
-    backgroundColor: colors.text.disabled,
-  },
-  dotActive: {
-    backgroundColor: colors.olive.primary,
-    width:           18,
-    borderRadius:    3,
+  logoImage: {
+    width:           140,
+    height:          140,
   },
 });
