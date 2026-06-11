@@ -40,6 +40,7 @@ export const TurfCard: React.FC<TurfCardProps> = ({ turf, onPress, index = 0 }) 
             style={styles.image}
             contentFit="cover"
             transition={300}
+            cachePolicy="reload"
           />
 
           <View style={styles.body}>

@@ -22,6 +22,46 @@ import type { AppStackParamList } from '@/navigation/types';
 type Route = NativeStackScreenProps<AppStackParamList, 'TurfDetail'>['route'];
 type Nav   = NativeStackNavigationProp<AppStackParamList>;
 
+const SkeletonBox = ({ width, height, style }: { width: number | string; height: number; style?: object }) => (
+  <MotiView
+    from={{ opacity: 0.4 }}
+    animate={{ opacity: 1 }}
+    transition={{ type: 'timing', duration: 800, loop: true }}
+    style={[{ width, height, borderRadius: radius.sm, backgroundColor: colors.bg.secondary }, style]}
+  />
+);
+
+const TurfDetailSkeleton = () => (
+  <View style={{ padding: spacing[5], gap: spacing[4] }}>
+    {/* Title row */}
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      <View style={{ flex: 1, marginRight: spacing[3], gap: spacing[2] }}>
+        <SkeletonBox width="70%" height={28} />
+        <SkeletonBox width="90%" height={16} />
+        <SkeletonBox width="60%" height={16} />
+      </View>
+      <SkeletonBox width={80} height={68} style={{ borderRadius: radius.md }} />
+    </View>
+    {/* Hours card */}
+    <SkeletonBox width="100%" height={52} style={{ borderRadius: radius.md }} />
+    {/* About */}
+    <View style={{ gap: spacing[2] }}>
+      <SkeletonBox width="30%" height={20} />
+      <SkeletonBox width="100%" height={16} />
+      <SkeletonBox width="85%" height={16} />
+    </View>
+    {/* Amenities */}
+    <View style={{ gap: spacing[2] }}>
+      <SkeletonBox width="35%" height={20} />
+      <View style={{ flexDirection: 'row', gap: spacing[2] }}>
+        <SkeletonBox width={90} height={34} style={{ borderRadius: radius.full }} />
+        <SkeletonBox width={80} height={34} style={{ borderRadius: radius.full }} />
+        <SkeletonBox width={100} height={34} style={{ borderRadius: radius.full }} />
+      </View>
+    </View>
+  </View>
+);
+
 
 export const TurfDetailScreen: React.FC = () => {
   const route      = useRoute<Route>();
@@ -32,7 +72,8 @@ export const TurfDetailScreen: React.FC = () => {
   const { data: turf, isLoading } = useQuery({
     queryKey: ['turf', turfId],
     queryFn:  () => getTurfByIdApi(turfId).then((r) => r.data.data),
-    staleTime: 1000 * 60 * 5,
+    staleTime: 0,
+    gcTime: 0,
   });
 
   return (
@@ -50,8 +91,16 @@ export const TurfDetailScreen: React.FC = () => {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ type: 'timing', duration: 500 }}
         >
-          <ImageSlider images={turf?.images ?? []} />
+          {isLoading || !turf ? (
+            <View style={styles.imageSkeleton} />
+          ) : (
+            <ImageSlider images={turf.images ?? []} />
+          )}
         </MotiView>
+
+        {isLoading || !turf ? (
+          <TurfDetailSkeleton />
+        ) : null}
 
         {!isLoading && turf ? (
           <MotiView
@@ -202,6 +251,11 @@ const styles = StyleSheet.create({
     gap:               6,
   },
   amenityText:   {},
+  imageSkeleton: {
+    width:           '100%',
+    height:          260,
+    backgroundColor: colors.bg.secondary,
+  },
   ctaContainer: {
     paddingHorizontal: spacing[5],
     paddingTop:        spacing[3],

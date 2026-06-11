@@ -38,6 +38,7 @@ export const ImageSlider: React.FC<Props> = ({ images, height = SLIDER_HEIGHT })
         style={{ width: SCREEN_WIDTH, height }}
         contentFit="cover"
         transition={300}
+        cachePolicy="reload"
       />
     ),
     [height],
