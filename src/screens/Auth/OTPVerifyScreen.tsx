@@ -13,11 +13,10 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { MotiView } from 'moti';
 import Animated, { useSharedValue, useAnimatedStyle, withSequence, withTiming } from 'react-native-reanimated';
 import { OtpInput } from 'react-native-otp-entry';
-import { AntDesign } from '@expo/vector-icons';
 import { AppText, Button } from '@/components/ui';
 import { colors, spacing, fontFamily } from '@/constants';
 import { loginApi, verifyOtpApi } from '@/api';
-import { useAuth, useGoogleSignIn } from '@/hooks';
+import { useAuth } from '@/hooks';
 import type { AuthStackParamList } from '@/navigation/types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -31,7 +30,6 @@ export const OTPVerifyScreen: React.FC = () => {
   const route  = useRoute<Route>();
   const insets = useSafeAreaInsets();
   const { login } = useAuth();
-  const { signInWithGoogle, loading: googleLoading } = useGoogleSignIn();
   const { phone, otp: devOtp } = route.params;
 
   const [otp, setOtp]         = useState('');
@@ -91,14 +89,6 @@ export const OTPVerifyScreen: React.FC = () => {
       if (res.data.data?.otp) console.log(`OTP: ${res.data.data.otp}`);
     } catch (err: any) {
       Alert.alert('Error', err?.response?.data?.message ?? 'Failed to resend OTP.');
-    }
-  };
-
-  const handleGoogleSignIn = async () => {
-    try {
-      await signInWithGoogle();
-    } catch (err: any) {
-      Alert.alert('Google Sign-In Failed', err?.message ?? 'Something went wrong.');
     }
   };
 
@@ -186,25 +176,6 @@ export const OTPVerifyScreen: React.FC = () => {
               </AppText>
             </Pressable>
           </View>
-
-          {/* Divider */}
-          <View style={styles.divider}>
-            <View style={styles.dividerLine} />
-            <AppText size="xs" color={colors.text.tertiary} style={styles.dividerText}>or</AppText>
-            <View style={styles.dividerLine} />
-          </View>
-
-          {/* Google Sign-In */}
-          <Pressable
-            onPress={handleGoogleSignIn}
-            disabled={googleLoading}
-            style={({ pressed }) => [styles.googleBtn, pressed && styles.googleBtnPressed]}
-          >
-            <AntDesign name="google" size={18} color={colors.text.primary} />
-            <AppText size="sm" weight="medium" color={colors.text.primary} style={styles.googleBtnText}>
-              {googleLoading ? 'Signing in…' : 'Continue with Google'}
-            </AppText>
-          </Pressable>
         </MotiView>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -264,30 +235,4 @@ const styles = StyleSheet.create({
     marginTop:      spacing[5],
   },
 
-  divider: {
-    flexDirection:  'row',
-    alignItems:     'center',
-    marginVertical: spacing[6],
-    gap:            spacing[3],
-  },
-  dividerLine: {
-    flex:            1,
-    height:          1,
-    backgroundColor: colors.bg.border,
-  },
-  dividerText: {},
-
-  googleBtn: {
-    flexDirection:    'row',
-    alignItems:       'center',
-    justifyContent:   'center',
-    gap:              spacing[3],
-    borderWidth:      1.5,
-    borderColor:      colors.bg.border,
-    borderRadius:     12,
-    paddingVertical:  spacing[4],
-    backgroundColor:  colors.bg.input,
-  },
-  googleBtnPressed: { opacity: 0.7 },
-  googleBtnText:    { marginLeft: spacing[1] },
 });

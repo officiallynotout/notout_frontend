@@ -6,7 +6,9 @@ import {
   Platform,
   StyleSheet,
   Alert,
+  Pressable,
 } from 'react-native';
+import { AntDesign } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MotiView } from 'moti';
@@ -16,6 +18,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AppText, Button, Input } from '@/components/ui';
 import { colors, spacing } from '@/constants';
 import { loginApi } from '@/api';
+import { useGoogleSignIn } from '@/hooks';
 import type { AuthStackParamList } from '@/navigation/types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -33,11 +36,20 @@ export const PhoneEntryScreen: React.FC = () => {
   const navigation = useNavigation<Nav>();
   const insets     = useSafeAreaInsets();
   const [loading, setLoading] = useState(false);
+  const { signInWithGoogle, loading: googleLoading } = useGoogleSignIn();
 
   const { control, handleSubmit, formState: { errors } } = useForm<Form>({
     resolver:      zodResolver(schema),
     defaultValues: { phone: '' },
   });
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (err: any) {
+      Alert.alert('Google Sign-In Failed', err?.message ?? 'Something went wrong.');
+    }
+  };
 
   const onSubmit = async ({ phone }: Form) => {
     setLoading(true);
@@ -104,6 +116,25 @@ export const PhoneEntryScreen: React.FC = () => {
             loading={loading}
             style={styles.submitBtn}
           />
+
+          {/* Divider */}
+          <View style={styles.divider}>
+            <View style={styles.dividerLine} />
+            <AppText size="xs" color={colors.text.tertiary}>or</AppText>
+            <View style={styles.dividerLine} />
+          </View>
+
+          {/* Google Sign-In */}
+          <Pressable
+            onPress={handleGoogleSignIn}
+            disabled={googleLoading}
+            style={({ pressed }) => [styles.googleBtn, pressed && styles.googleBtnPressed]}
+          >
+            <AntDesign name="google" size={18} color={colors.text.primary} />
+            <AppText size="sm" weight="medium" color={colors.text.primary} style={styles.googleBtnText}>
+              {googleLoading ? 'Signing in…' : 'Continue with Google'}
+            </AppText>
+          </Pressable>
         </MotiView>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -121,4 +152,30 @@ const styles = StyleSheet.create({
   subheading: { marginBottom: spacing[8], lineHeight: 24 },
   form:       { gap: spacing[4] },
   submitBtn:  { marginTop: spacing[2] },
+
+  divider: {
+    flexDirection:  'row',
+    alignItems:     'center',
+    marginVertical: spacing[6],
+    gap:            spacing[3],
+  },
+  dividerLine: {
+    flex:            1,
+    height:          1,
+    backgroundColor: colors.bg.border,
+  },
+
+  googleBtn: {
+    flexDirection:    'row',
+    alignItems:       'center',
+    justifyContent:   'center',
+    gap:              spacing[3],
+    borderWidth:      1.5,
+    borderColor:      colors.bg.border,
+    borderRadius:     12,
+    paddingVertical:  spacing[4],
+    backgroundColor:  colors.bg.input,
+  },
+  googleBtnPressed: { opacity: 0.7 },
+  googleBtnText:    { marginLeft: spacing[1] },
 });
