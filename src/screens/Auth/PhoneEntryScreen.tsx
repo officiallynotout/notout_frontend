@@ -43,10 +43,7 @@ export const PhoneEntryScreen: React.FC = () => {
     setLoading(true);
     try {
       const res = await loginApi({ phone });
-      if (res.data.data?.otp) {
-        console.log(`\n🔑 OTP for ${phone}: ${res.data.data.otp}\n`);
-      }
-      navigation.navigate('OTPVerify', { phone });
+      navigation.navigate('OTPVerify', { phone, otp: res.data.data?.otp });
     } catch (err: any) {
       Alert.alert('Error', err?.response?.data?.message ?? 'Something went wrong. Try again.');
     } finally {

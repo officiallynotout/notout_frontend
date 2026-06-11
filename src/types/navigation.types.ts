@@ -15,6 +15,7 @@ export type AuthStackParamList = {
   PhoneEntry: undefined;
   OTPVerify: {
     phone: string;
+    otp?: string;
   };
 };
 

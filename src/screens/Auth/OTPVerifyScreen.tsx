@@ -12,29 +12,30 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { MotiView } from 'moti';
 import Animated, { useSharedValue, useAnimatedStyle, withSequence, withTiming } from 'react-native-reanimated';
-// Reanimated 4: Animated is still a default export, same hooks API
 import { OtpInput } from 'react-native-otp-entry';
+import { AntDesign } from '@expo/vector-icons';
 import { AppText, Button } from '@/components/ui';
 import { colors, spacing, fontFamily } from '@/constants';
 import { loginApi, verifyOtpApi } from '@/api';
-import { useAuth } from '@/hooks';
+import { useAuth, useGoogleSignIn } from '@/hooks';
 import type { AuthStackParamList } from '@/navigation/types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type Route = NativeStackScreenProps<AuthStackParamList, 'OTPVerify'>['route'];
 
-const OTP_LENGTH    = 4;
-const RESEND_SECS   = 30;
+const OTP_LENGTH  = 4;
+const RESEND_SECS = 30;
 
 export const OTPVerifyScreen: React.FC = () => {
   const navigation = useNavigation();
   const route  = useRoute<Route>();
   const insets = useSafeAreaInsets();
-  const { login }      = useAuth();
-  const { phone } = route.params;
+  const { login } = useAuth();
+  const { signInWithGoogle, loading: googleLoading } = useGoogleSignIn();
+  const { phone, otp: devOtp } = route.params;
 
-  const [otp, setOtp]           = useState('');
-  const [loading, setLoading]   = useState(false);
+  const [otp, setOtp]         = useState('');
+  const [loading, setLoading] = useState(false);
   const [resendTimer, setTimer] = useState(RESEND_SECS);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -72,7 +73,6 @@ export const OTPVerifyScreen: React.FC = () => {
     try {
       const res = await verifyOtpApi({ phone, otp: code });
       login(res.data.data);
-      // RootNavigator's conditional rendering handles the switch automatically
     } catch (err: any) {
       shake();
       Alert.alert('Invalid OTP', err?.response?.data?.message ?? 'Please check your code and try again.');
@@ -84,11 +84,21 @@ export const OTPVerifyScreen: React.FC = () => {
   const handleResend = async () => {
     if (resendTimer > 0) return;
     try {
-      await loginApi({ phone });
+      const res = await loginApi({ phone });
       startResendTimer();
       Alert.alert('OTP Sent', 'A new code has been sent to your phone.');
+      // If server returns OTP (dev mode), log it for reference
+      if (res.data.data?.otp) console.log(`OTP: ${res.data.data.otp}`);
     } catch (err: any) {
       Alert.alert('Error', err?.response?.data?.message ?? 'Failed to resend OTP.');
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (err: any) {
+      Alert.alert('Google Sign-In Failed', err?.message ?? 'Something went wrong.');
     }
   };
 
@@ -118,7 +128,7 @@ export const OTPVerifyScreen: React.FC = () => {
             Verify{'\n'}Phone.
           </AppText>
           <AppText size="base" color={colors.text.secondary} style={styles.subheading}>
-            Enter the 6-digit code sent to{' '}
+            Enter the 4-digit code sent to{' '}
             <AppText size="base" weight="semiBold" color={colors.text.primary}>
               +91 {phone}
             </AppText>
@@ -130,16 +140,24 @@ export const OTPVerifyScreen: React.FC = () => {
           animate={{ opacity: 1, translateY: 0 }}
           transition={{ type: 'timing', duration: 400, delay: 150 }}
         >
+          {/* Dev OTP hint */}
+          {devOtp && (
+            <View style={styles.otpHint}>
+              <AppText size="sm" color={colors.text.secondary}>Your OTP: </AppText>
+              <AppText size="sm" weight="bold" color={colors.olive.primary}>{devOtp}</AppText>
+            </View>
+          )}
+
           <Animated.View style={[styles.otpWrapper, shakeStyle]}>
             <OtpInput
               numberOfDigits={OTP_LENGTH}
               onFilled={(code) => { setOtp(code); handleVerify(code); }}
               onTextChange={setOtp}
               theme={{
-                containerStyle:    styles.otpContainer,
-                inputsContainerStyle: styles.otpInputsRow,
-                pinCodeContainerStyle: styles.otpCell,
-                pinCodeTextStyle:  styles.otpText,
+                containerStyle:              styles.otpContainer,
+                inputsContainerStyle:        styles.otpInputsRow,
+                pinCodeContainerStyle:       styles.otpCell,
+                pinCodeTextStyle:            styles.otpText,
                 focusedPinCodeContainerStyle: styles.otpCellFocused,
                 filledPinCodeContainerStyle:  styles.otpCellFilled,
               }}
@@ -168,6 +186,25 @@ export const OTPVerifyScreen: React.FC = () => {
               </AppText>
             </Pressable>
           </View>
+
+          {/* Divider */}
+          <View style={styles.divider}>
+            <View style={styles.dividerLine} />
+            <AppText size="xs" color={colors.text.tertiary} style={styles.dividerText}>or</AppText>
+            <View style={styles.dividerLine} />
+          </View>
+
+          {/* Google Sign-In */}
+          <Pressable
+            onPress={handleGoogleSignIn}
+            disabled={googleLoading}
+            style={({ pressed }) => [styles.googleBtn, pressed && styles.googleBtnPressed]}
+          >
+            <AntDesign name="google" size={18} color={colors.text.primary} />
+            <AppText size="sm" weight="medium" color={colors.text.primary} style={styles.googleBtnText}>
+              {googleLoading ? 'Signing in…' : 'Continue with Google'}
+            </AppText>
+          </Pressable>
         </MotiView>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -184,7 +221,20 @@ const styles = StyleSheet.create({
   back:        { marginBottom: spacing[6] },
   heading:     { marginBottom: spacing[2], lineHeight: 44 },
   subheading:  { marginBottom: spacing[8], lineHeight: 24 },
-  otpWrapper:  { marginBottom: spacing[6] },
+
+  otpHint: {
+    flexDirection:    'row',
+    alignItems:       'center',
+    backgroundColor:  `${colors.olive.primary}18`,
+    borderRadius:     8,
+    paddingVertical:  spacing[2],
+    paddingHorizontal: spacing[4],
+    marginBottom:     spacing[4],
+    borderWidth:      1,
+    borderColor:      `${colors.olive.primary}40`,
+  },
+
+  otpWrapper:   { marginBottom: spacing[6] },
   otpContainer: { width: '100%' },
   otpInputsRow: {
     flexDirection:  'row',
@@ -206,11 +256,38 @@ const styles = StyleSheet.create({
     fontSize:   24,
     color:      colors.text.primary,
   },
-  verifyBtn:   {},
+  verifyBtn: {},
   resendRow: {
     flexDirection:  'row',
     alignItems:     'center',
     justifyContent: 'center',
     marginTop:      spacing[5],
   },
+
+  divider: {
+    flexDirection:  'row',
+    alignItems:     'center',
+    marginVertical: spacing[6],
+    gap:            spacing[3],
+  },
+  dividerLine: {
+    flex:            1,
+    height:          1,
+    backgroundColor: colors.bg.border,
+  },
+  dividerText: {},
+
+  googleBtn: {
+    flexDirection:    'row',
+    alignItems:       'center',
+    justifyContent:   'center',
+    gap:              spacing[3],
+    borderWidth:      1.5,
+    borderColor:      colors.bg.border,
+    borderRadius:     12,
+    paddingVertical:  spacing[4],
+    backgroundColor:  colors.bg.input,
+  },
+  googleBtnPressed: { opacity: 0.7 },
+  googleBtnText:    { marginLeft: spacing[1] },
 });

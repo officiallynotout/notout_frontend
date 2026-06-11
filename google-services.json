@@ -12,7 +12,12 @@
           "package_name": "com.notout.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1092866809609-3hngefkr3odqtgo6lsuic8i8fvnfgr5t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCRNX4T7liPLuzrZ4ZGTFBDvPlR1faLryg"
@@ -20,26 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:1092866809609:android:21eb5b5db8260227f17dd8",
-        "android_client_info": {
-          "package_name": "com.notout.frontendone"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCRNX4T7liPLuzrZ4ZGTFBDvPlR1faLryg"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1092866809609-3hngefkr3odqtgo6lsuic8i8fvnfgr5t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

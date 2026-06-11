@@ -21,9 +21,12 @@
     },
     "production": {
       "android": {
-        "buildType": "app-bundle"
+        "buildType": "apk"
       },
-      "channel": "production"
+      "channel": "production",
+      "env": {
+        "EXPO_PUBLIC_API_BASE_URL": "https://notout-backend-1.onrender.com/mobile/v1"
+      }
     }
   },
   "submit": {
